@@ -1,0 +1,3 @@
+2023-12-14T11:45:38.3568883 Error retrieving transfers: PreparedStatementCallback; bad SQL grammar [SELECT t.transfer_id, t.amount, tt.transfer_type_desc, ts.transfer_status_desc, t.account_from, t.account_toFROM transfer tJOIN transfer_type tt ON t.transfer_type_id = tt.transfer_type_idJOIN transfer_status ts ON t.transfer_status_id = ts.transfer_status_idWHERE user_id = ?]; nested exception is org.postgresql.util.PSQLException: ERROR: syntax error at or near "tJOIN"
+  Position: 123
+2023-12-14T11:45:38.3573947 Error retrieving transfers: Could not access database

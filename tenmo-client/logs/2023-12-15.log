@@ -1,0 +1,22 @@
+2023-12-15T10:43:24.8330972 Error retrieving transfers: PreparedStatementCallback; bad SQL grammar [SELECT t.transfer_id, t.amount, tt.transfer_type_desc, ts.transfer_status_desc, t.account_from, t.account_toFROM transfer tJOIN transfer_type tt ON t.transfer_type_id = tt.transfer_type_idJOIN transfer_status ts ON t.transfer_status_id = ts.transfer_status_idWHERE user_id = ?]; nested exception is org.postgresql.util.PSQLException: ERROR: syntax error at or near "tJOIN"
+  Position: 123
+2023-12-15T10:43:24.8330972 Error retrieving transfers: Could not access database
+2023-12-15T11:27:32.2679368 Error retrieving transfers: PreparedStatementCallback; bad SQL grammar [SELECT t.transfer_id, t.amount, tt.transfer_type_desc, ts.transfer_status_desc, t.account_from, t.account_toFROM transfer tJOIN transfer_type tt ON t.transfer_type_id = tt.transfer_type_idJOIN transfer_status ts ON t.transfer_status_id = ts.transfer_status_idWHERE user_id = ?]; nested exception is org.postgresql.util.PSQLException: ERROR: syntax error at or near "tJOIN"
+  Position: 123
+2023-12-15T11:27:32.2702367 Error retrieving transfers: Could not access database
+2023-12-15T11:30:50.5951034 Error retrieving transfers: PreparedStatementCallback; bad SQL grammar [SELECT t.transfer_id, t.amount, tt.transfer_type_desc, ts.transfer_status_desc, t.account_from, t.account_toFROM transfer tJOIN transfer_type tt ON t.transfer_type_id = tt.transfer_type_idJOIN transfer_status ts ON t.transfer_status_id = ts.transfer_status_idWHERE user_id = ?]; nested exception is org.postgresql.util.PSQLException: ERROR: syntax error at or near "tJOIN"
+  Position: 123
+2023-12-15T11:30:50.5951034 Error retrieving transfers: Could not access database
+2023-12-15T11:36:49.590864 Error retrieving transfers: PreparedStatementCallback; bad SQL grammar [SELECT t.transfer_id, t.amount, tt.transfer_type_desc, ts.transfer_status_desc, t.account_from, t.account_to FROM transfer t JOIN transfer_type tt ON t.transfer_type_id = tt.transfer_type_id JOIN transfer_status ts ON t.transfer_status_id = ts.transfer_status_id WHERE user_id = ?]; nested exception is org.postgresql.util.PSQLException: ERROR: column "user_id" does not exist
+  Position: 270
+2023-12-15T11:36:49.590864 Error retrieving transfers: Could not access database
+2023-12-15T11:38:17.7759973 Error retrieving transfers: PreparedStatementCallback; bad SQL grammar [SELECT t.transfer_id, t.amount, tt.transfer_type_desc, ts.transfer_status_desc, t.account_from, t.account_to FROM transfer t JOIN transfer_type tt ON t.transfer_type_id = tt.transfer_type_id JOIN transfer_status ts ON t.transfer_status_id = ts.transfer_status_id WHERE user_id = ?]; nested exception is org.postgresql.util.PSQLException: ERROR: column "user_id" does not exist
+  Position: 270
+2023-12-15T11:38:17.7759973 Error retrieving transfers: Could not access database
+2023-12-15T11:50:23.7822603 Error retrieving transfers: PreparedStatementCallback; bad SQL grammar [SELECT t.transfer_id, t.amount, tt.transfer_type_desc, ts.transfer_status_desc, t.account_from, t.account_to FROM transfer t JOIN transfer_type tt ON t.transfer_type_id = tt.transfer_type_id JOIN transfer_status ts ON t.transfer_status_id = ts.transfer_status_id WHERE user_id = ?]; nested exception is org.postgresql.util.PSQLException: ERROR: column "user_id" does not exist
+  Position: 270
+2023-12-15T11:50:23.7832579 Error retrieving transfers: Could not access database
+2023-12-15T11:58:09.6726803 Error retrieving transfers: PreparedStatementCallback; bad SQL grammar [SELECT t.transfer_id, t.amount, tt.transfer_type_desc, ts.transfer_status_desc, t.account_from, t.account_to FROM transfer t JOIN transfer_type tt ON t.transfer_type_id = tt.transfer_type_id JOIN transfer_status ts ON t.transfer_status_id = ts.transfer_status_id WHERE user_id = ?]; nested exception is org.postgresql.util.PSQLException: ERROR: column "user_id" does not exist
+  Position: 270
+2023-12-15T11:58:09.6726803 Error retrieving transfers: Could not access database
+2023-12-15T19:28:07.4729715 I/O error on POST request for "http://localhost:8080/register": Connection refused: connect; nested exception is java.net.ConnectException: Connection refused: connect

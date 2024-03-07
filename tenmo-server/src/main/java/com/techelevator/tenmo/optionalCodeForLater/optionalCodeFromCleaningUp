@@ -1,0 +1,178 @@
+//DO NOT IMPLEMENT UNTIL AFTER THE CAPSTONE HAS BEEN COMPLETED FOR THE BASIC METHODS.
+
+public class optionalcode {
+
+    /*
+
+    transferDao
+      String createTransfer(int accountFrom, int accountTo, BigDecimal amount, int transferId);
+
+
+    String updateTransferRequests(int statusId);
+    String transferMoney(int accountFrom, int accountTo, BigDecimal amount);
+
+    boolean acceptTransfer(int transferId);
+    boolean denyTransfer(int transferId);
+
+     */
+    /*
+    jdbctransferdao
+
+    @Override
+//    public List<Transfer> getAllPendingTransfersByUserId(int userId) {
+//        List<Transfer> transferList = new ArrayList<>();
+//        Transfer transfer;
+//        String sql = "SELECT t.*, u.username AS userFrom, v.username AS userTo FROM transfer t " +
+//                "JOIN account a ON t.account_from = a.account_id " +
+//                "JOIN account b ON t.account_to = b.account_id " +
+//                "JOIN tenmo_users u ON a.user_id = u.user_id " +
+//                "JOIN tenmo_user v ON b.user_id = v.user_id " +
+//                "WHERE transfer_status_id = 1 AND (account_from = ? OR account_to = ?)";
+//        try {
+//            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId, userId); //edit to fit the sql logic
+//            if(results.next()){
+//                transfer= mapRowToCard(results);
+//                transferList.add(transfer);
+//            }
+//        }catch(DataAccessException e){
+//            throw new DaoException("Could not access database.");
+//        }
+//        return transferList;
+//    }
+
+    @Override
+    public String createTransfer(int accountFrom, int accountTo, BigDecimal amount) {
+        if (accountFrom == accountTo) {
+            return "You can't send money to yourself.";
+        }
+        if (accountFrom <= 0 || accountTo <= 0) {
+            throw new IllegalArgumentException("Account id cannot be less than 0.");
+        }
+        BigDecimal accountFromBalance = accountDao.getBalanceByAccountId(accountFrom);
+        if (accountFromBalance.compareTo(amount) >= 0) {
+            String sql = "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
+                    "VALUES (2, 2, ?, ?, ?)";
+            jdbcTemplate.update(sql, accountFrom, accountTo, amount);
+            accountDao.subtractBalanceByAccountId(amount, accountFrom);
+            accountDao.addToBalanceByUserId(amount, accountTo);
+            return "Transfer complete";
+        }else{
+            return "Transfer failed due to lack of funds.";
+        }
+
+    }
+     */
+    /*
+    transfercontroller
+
+    @PostMapping("/create")
+    public ResponseEntity<String> createTransfer(@RequestBody Transfer transferRequest){
+        String result = transferDao.createTransfer(transferRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+    }
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @PostMapping("/accept/{transferId}")
+    public ResponseEntity<String>acceptTransfer(@PathVariable int transferId) {
+        //accepts a transfer based on provided transferId
+        try {
+            boolean result = transferDao.acceptTransfer(transferId);
+            if (result) {
+                return ResponseEntity.ok("Transfer accepted successfully!");
+            } else {
+                return ResponseEntity.ok("Failed to accept your transfer.");
+            }
+        } catch (DaoException e) {
+            BasicLogger.log("Error retrieving transfers: " + e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);//not sure about exceptions
+        }
+    }
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/deny/{transferId}")
+    public ResponseEntity<String> denyTransfer(@PathVariable int transferId) {
+        //denies transfer based on provided transferId
+        try {
+            boolean result = transferDao.denyTransfer(transferId);
+            if (result) {
+                return ResponseEntity.ok("Transfer denied successfully");
+            } else {
+                return ResponseEntity.ok("Failed to deny the transfer");
+            }
+        } catch (DaoException e) {
+            BasicLogger.log("Error retrieving transfers: " + e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);//not sure about exceptions
+        }
+    }
+
+    @GetMapping("/pending/{userId}")
+//    public ResponseEntity<List<Transfer>>getAllPendingTransfersByUserId(@PathVariable Integer userId) {
+//        // retrieves list of pending transfers for specific user
+//        try {
+//            List<Transfer> pendingTransfer = transferDao.getAllPendingTransfersByUserId(userId);
+//            return ResponseEntity.ok(pendingTransfer);
+//        } catch (DaoException e) {
+//            BasicLogger.log("Error retrieving transfers: " + e.getMessage());
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST); //not sure about exceptions
+//        }
+//    }
+     */
+
+
+transfercontroller
+
+@GetMapping(path = "/pending")
+    public ResponseEntity<List<Transfer>> getAllPendingTransfersByUserId(Principal principal){
+        try{
+            List<Transfer> pendingTransfers = transferDao.getAllPendingTransfersByUserId(userDao.getUserByUsername(principal.getName()).getId());
+            if(pendingTransfers == null) {
+                return ResponseEntity.ok().body(Collections.emptyList());
+            }else{
+                return ResponseEntity.ok(pendingTransfers);
+            }
+        }catch(DaoException e){
+            BasicLogger.log("TransferController PendingTransferList -- Error retrieving transfers: "+ e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+corresponding transferdao method:
+@Override
+    public List<Transfer> getAllPendingTransfersByUserId(int userId) {
+        List<Transfer> transferList = new ArrayList<>();
+        Transfer transfer;
+        String sql = "select * from transfer " +
+                "JOIN account on transfer.account_from = account.account_id " +
+                "JOIN transfer_status USING (transfer_status_id) " +
+                "JOIN transfer_type USING (transfer_type_id) " +
+                "WHERE user_id = ? AND transfer_type_id == 1";
+        try{
+            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
+            while(results.next()){
+                transfer = mapRowToCard(results);
+                transferList.add(transfer);
+            }
+        }catch(DataAccessException e){
+            BasicLogger.log("PendingTransfer JDBCtransferDAO Error retrieving transfers" + e.getRootCause());
+            throw new DaoException("Could not access database");
+        }
+        return transferList;
+    }
+
+    transferservice
+
+    public List<Transfer> getAllPendingTransfersByUserId(User user, String bearerToken) { //retrieve a list of pending transfers
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.setBearerAuth(bearerToken); // Set your bearer token here
+
+            HttpEntity<Void> entity = new HttpEntity<>(httpHeaders);
+
+            try {
+                String url = urlBaseTransfer + "/pending";
+                ResponseEntity<List<Transfer>> response = restTemplate.exchange(
+                        url, HttpMethod.GET, entity, new ParameterizedTypeReference<List<Transfer>>() {
+                        });
+                return response.getBody();
+            }catch(RestClientResponseException | ResourceAccessException e) {
+                BasicLogger.log("PendingTransfer TransferService -- Error retrieving pending transfers: " + e.getMessage());
+            } return Collections.emptyList();
+        }
+}
